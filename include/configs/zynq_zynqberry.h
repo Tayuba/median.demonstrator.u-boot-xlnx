@@ -8,21 +8,31 @@
  * SPDX-License-Identifier:	GPL-2.0+
  */
 
-#ifndef __CONFIG_ZYNQ_ZYBO_H
-#define __CONFIG_ZYNQ_ZYBO_H
+#ifndef __CONFIG_ZYNQ_ZYNQBERRY_H
+#define __CONFIG_ZYNQ_ZYNQBERRY_H
 
-#define CONFIG_ZYNQ_I2C0
-#define CONFIG_ZYNQ_I2C1
-#define CONFIG_SYS_I2C_EEPROM_ADDR_LEN	1
-#define CONFIG_CMD_EEPROM
-#define CONFIG_ZYNQ_GEM_EEPROM_ADDR	0x50
-#define CONFIG_ZYNQ_GEM_I2C_MAC_OFFSET	0xFA
-#define CONFIG_DISPLAY
-#define CONFIG_I2C_EDID
-
-/* Define ZYBO PS Clock Frequency to 50MHz */
-#define CONFIG_ZYNQ_PS_CLK_FREQ	50000000UL
+#define CONFIG_ENV_IS_NOWHERE
+#define CONFIG_EXTRA_ENV_SETTINGS	\
+	"kernel_image=uImage\0"	\
+	"kernel_load_address=0x2080000\0" \
+	"devicetree_image=zynq-zynqberry.dtb\0"	\
+	"devicetree_load_address=0x2000000\0"	\
+	"kernel_size=0x500000\0"	\
+	"devicetree_size=0x20000\0"	\
+	"boot_size=0xF00000\0"	\
+	"fdt_high=0x20000000\0"	\
+	"loadbootenv=load mmc 0 ${loadbootenv_addr} ${bootenv}\0" \
+	"sdboot=if mmcinfo; then " \
+			"echo Copying Linux from SD to RAM... && " \
+			"load mmc 0 ${kernel_load_address} ${kernel_image} && " \
+			"load mmc 0 ${devicetree_load_address} ${devicetree_image} && " \
+			"bootm ${kernel_load_address} - ${devicetree_load_address}; " \
+		"fi\0"
 
 #include <configs/zynq-common.h>
 
-#endif /* __CONFIG_ZYNQ_ZYBO_H */
+#undef CONFIG_BOOTCOMMAND
+#define CONFIG_BOOTCOMMAND		"run sdboot"
+
+
+#endif /* __CONFIG_ZYNQ_ZYNQBERRY_H */
